@@ -5,13 +5,14 @@ import Exercise from './Exercise';
 import Workout from './Workout';
 
 export default interface WorkoutModel {
-  entries: Exercise[];
-  isAddingNewExercise: boolean;
-  updateSet: Action<WorkoutModel, { field: string, value: number, id: string, setNumber: number }>;
-  setEditExerciseIndex: Action<WorkoutModel, { id: string, setNumber: number }>;
-  setIsAddingNewExercise: Action<WorkoutModel, boolean>;
-  setIsAddingNewSet: Action<WorkoutModel, { name: string, setNumber: number, flag: boolean }>;
-  addExercise: Action<WorkoutModel, Set>;
-  addSet: Action<WorkoutModel, Set>;
-  deleteSet: Action<WorkoutModel, Set>;
+  entries: Workout[];
+  addWorkout: Action<WorkoutModel, Workout>;
+  updateSet: Action<WorkoutModel, { field: string, value: number, exerciseId: string, setNumber: number, workoutId: string }>;
+  setEditExerciseIndex: Action<WorkoutModel, { workoutId: string, exerciseId: string, setNumber: number }>;
+  setIsAddingNewExercise: Action<WorkoutModel, { id: string, flag: boolean }>;
+  setIsAddingNewSet: Action<WorkoutModel, { workoutId: string, exerciseId: string, flag: boolean }>;
+  setNewSet: Action<WorkoutModel, { workoutId: string, exerciseId: string, setNumber: number }>;
+  addExercise: Action<WorkoutModel, { workoutId: string, exercise: Exercise }>;
+  addSet: Action<WorkoutModel, { workoutId: string, set: Set }>;
+  deleteSet: Action<WorkoutModel, { workoutId: string, set: Set }>;
 }
