@@ -5,11 +5,12 @@ import { useStoreActions } from '../../hooks';
 import Exercise from '../../interfaces/Exercise';
 
 type AddIconProps = {
+  workoutId: string,
   setNumber: number,
   exercise: Exercise,
 };
 
-const AddNewExerciseIcon: FunctionComponent<AddIconProps> = ({ setNumber, exercise }) => {
+const AddNewExerciseIcon: FunctionComponent<AddIconProps> = ({ workoutId, setNumber, exercise }) => {
   const { addSet } = useStoreActions((state) => state.workouts);
 
   const handleAddNewSet = (): void => {
@@ -20,7 +21,8 @@ const AddNewExerciseIcon: FunctionComponent<AddIconProps> = ({ setNumber, exerci
       reps: 0,
       newSet: true,
     };
-    addSet(set);
+    addSet({ workoutId, set });
+
   };
 
   if (setNumber === 1) {

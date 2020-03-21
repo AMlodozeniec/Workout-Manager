@@ -27,9 +27,10 @@ const SetSchema = yup.object().shape({
 
 type NewSetRowProps = {
   exercise: Exercise,
+  workoutId: string,
 };
 
-const NewSetRow: FunctionComponent<NewSetRowProps> = ({ exercise }) => {
+const NewSetRow: FunctionComponent<NewSetRowProps> = ({ exercise, workoutId }) => {
   const classes = useStyles();
   const { register, handleSubmit, errors } = useForm<Set>({
     validationSchema: SetSchema,
@@ -42,12 +43,8 @@ const NewSetRow: FunctionComponent<NewSetRowProps> = ({ exercise }) => {
       setNumber: exercise.sets.length + 1,
       name: exercise.name,
     };
-    addSet(data);
-    // setIsAddingNewSet({
-    //   name: data.name,
-    //   setNumber: data.setNumber,
-    //   flag: true,
-    // });
+    addSet({ workoutId, set: data });
+    setIsAddingNewSet({ workoutId, exerciseId: exercise.id, flag: false, })
   };
 
   return (
@@ -88,7 +85,7 @@ const NewSetRow: FunctionComponent<NewSetRowProps> = ({ exercise }) => {
         <DoneIcon onClick={handleSubmit(onSubmit)} />
       </TableCell>
       <TableCell align="center">
-        <ClearIcon onClick={(): void => setIsAddingNewSet({ name: exercise.name, setNumber: exercise.sets.length + 1, flag: false, })} />
+        <ClearIcon onClick={(): void => setIsAddingNewSet({ workoutId, exerciseId: exercise.id, flag: false, })} />
       </TableCell>
     </TableRow>
   );

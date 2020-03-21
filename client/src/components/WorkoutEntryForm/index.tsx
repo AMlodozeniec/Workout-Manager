@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import TableCell from '@material-ui/core/TableCell';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import uniqueId from 'lodash/uniqueId';
 
 import useStyles from './styles';
 import Set from '../../interfaces/Set';
-import { useStoreActions } from '../../hooks';
+import { useStoreState, useStoreActions } from '../../hooks';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -27,8 +28,14 @@ const SetSchema = yup.object().shape({
     .required('Required.'),
 });
 
-const WorkoutEntryForm: React.FC = () => {
+type WorkoutEntryFormProps = {
+  id: string,
+};
+
+const WorkoutEntryForm: FunctionComponent<WorkoutEntryFormProps> = ({ id }) => {
   const classes = useStyles();
+  const entries = useStoreState((state) => state.workouts.entries);
+
   const { addExercise, setIsAddingNewExercise } = useStoreActions(state => state.workouts);
 
   const { register, handleSubmit, errors } = useForm<Set>({
@@ -36,8 +43,17 @@ const WorkoutEntryForm: React.FC = () => {
   });
 
   const onSubmit = (data: Set): void => {
-    addExercise(data);
-    setIsAddingNewExercise(false);
+    const sets: Set[] = [];
+    const exercise = {
+      id: uniqueId(),
+      name: data.name,
+      sets,
+      isAddingNewSet: false,
+      editSetIdx: -1,
+    };
+    exercise.sets.push(data);
+    addExercise({ workoutId: id, exercise });
+    setIsAddingNewExercise({ id, flag: false });
   };
 
   return (
@@ -92,7 +108,7 @@ const WorkoutEntryForm: React.FC = () => {
         <DoneIcon onClick={handleSubmit(onSubmit)} />
       </TableCell>
       <TableCell align="center">
-        <ClearIcon onClick={(): void => setIsAddingNewExercise(false)} />
+        <ClearIcon onClick={(): void => setIsAddingNewExercise({ id, flag: false })} />
       </TableCell>
     </TableRow>
   );
