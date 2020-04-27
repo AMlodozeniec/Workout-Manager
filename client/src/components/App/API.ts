@@ -1,7 +1,7 @@
-const API_URL = 'http://localhost:3001';
+const API_URL = 'http://localhost:8095';
 
 export default async function listWorkoutEntries() {
-  const response = await (fetch(`${API_URL}/api/logs`));
+  const response = await (fetch(`${API_URL}/user/workouts`));
   // console.log(typeof response.json());
   return response.json();
 }

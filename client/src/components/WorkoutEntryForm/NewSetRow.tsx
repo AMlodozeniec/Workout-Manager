@@ -49,7 +49,7 @@ const NewSetRow: FunctionComponent<NewSetRowProps> = ({ exercise, workoutId }) =
 
   return (
     <TableRow>
-      <TableCell component="th" scope="entry">{null}</TableCell>
+      <TableCell align="center" component="th" scope="entry">{null}</TableCell>
       <TableCell align="right">{exercise.sets.length + 1}</TableCell>
       <TableCell align="right">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>

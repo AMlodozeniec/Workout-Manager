@@ -1,19 +1,14 @@
-import React, { FunctionComponent } from 'react';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
+import React, { FunctionComponent, useState } from 'react';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import Paper from '@material-ui/core/Paper';
 import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutlineOutlined';
 import TextField from '@material-ui/core/TextField';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
+import { useForm, Controller } from 'react-hook-form';
+// import * as yup from 'yup';
 
-import AddNewExerciseIcon from './AddNewExerciseIcon';
+import ExerciseIcons from './ExerciseIcons';
 import Set from '../../interfaces/Set';
 import Exercise from '../../interfaces/Exercise';
 import useStyles from '../WorkoutEntryForm/styles';
@@ -26,28 +21,32 @@ type RowProps = {
   workoutId: string,
 };
 
-const UpdatedSetSchema = yup.object().shape({
-  weight: yup
-    .number()
-    .required('Required.'),
-  reps: yup
-    .number()
-    .required('Required.'),
-});
+// const UpdatedSetSchema = yup.object().shape({
+//   name: yup
+//     .string(),
+//   // .required('Required.'),
+//   weight: yup
+//     .number(),
+//   // .required('Required.'),
+//   reps: yup
+//     .number(),
+//   // .required('Required.'),
+// });
 
 const Row: FunctionComponent<RowProps> = ({ set, exercise, workoutId }) => {
   const classes = useStyles();
-  const { deleteSet, setEditExerciseIndex, updateSet, setIsAddingNewSet, setNewSet } = useStoreActions(state => state.workouts);
-  const { register, handleSubmit, errors } = useForm<Set>({
-    validationSchema: UpdatedSetSchema,
-  });
-
+  const [isHovered, setIsHovered] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const { saveDeleteSet, setEditExerciseIndex, saveUpdateSet, updateExercise, setIsAddingNewSet, setNewSet } = useStoreActions(state => state.workouts);
+  const { register, control, handleSubmit } = useForm();
 
   const editSet = (workoutId: string, exerciseId: string, setNumber: number) => {
     setEditExerciseIndex({ workoutId, exerciseId, setNumber });
   };
 
   const finishEditingSet = (workoutId: string, exerciseId: string, setNumber: number) => {
+    console.log(control);
+    // saveUpdateSet({ weight, reps, exercise, setNumber: set.setNumber, workoutId });
     setEditExerciseIndex({ workoutId, exerciseId, setNumber: -1 });
   };
 
@@ -55,14 +54,19 @@ const Row: FunctionComponent<RowProps> = ({ set, exercise, workoutId }) => {
     setNewSet({ workoutId, exerciseId, setNumber });
   };
 
-  const handleChange = (e: any, field: string, exercise: Exercise, set: Set, workoutId: string) => {
-    const { value } = e.target;
-    updateSet({ field, value, exerciseId: exercise.id, setNumber: set.setNumber, workoutId });
-    // console.log(value);
+  // const handleChange = (e: any, field: string, exercise: Exercise, set: Set, workoutId: string) => {
+  //   const { value } = e.target;
+  //   saveUpdateSet({ field, value, exercise, setNumber: set.setNumber, workoutId });
+  // };
+  // const handleNameChange = (e: any, exercise: Exercise, workoutId: string) => {
+  //   const { value } = e.target;
+  //   updateExercise({ value, exerciseId: exercise.id, workoutId });
+  // };
 
-  };
 
-  const onSubmit = (data: Set) => {
+  const onSubmit = (data: any) => {
+    const { weight, reps } = data;
+
     if (set.newSet) {
       setIsAddingNewSet({
         workoutId,
@@ -70,10 +74,14 @@ const Row: FunctionComponent<RowProps> = ({ set, exercise, workoutId }) => {
         flag: false,
       });
       finishAddingNewSet(workoutId, exercise.id, set.setNumber);
+      saveUpdateSet({ weight, reps, exercise, setNumber: set.setNumber, workoutId });
     }
     else {
+      saveUpdateSet({ weight, reps, exercise, setNumber: set.setNumber, workoutId });
       finishEditingSet(workoutId, exercise.id, set.setNumber);
+      setIsEditingName(false);
     }
+
   };
 
   const editingRowField = (field: string) => {
@@ -83,21 +91,25 @@ const Row: FunctionComponent<RowProps> = ({ set, exercise, workoutId }) => {
       fieldVal = set.weight;
     } else if (lowercaseField === 'reps') {
       fieldVal = set.reps;
+    } else if (lowercaseField === 'name') {
+      fieldVal = exercise.name;
     }
     return (
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <TextField
-          inputRef={register}
-          label={field}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          as={TextField}
           name={lowercaseField}
+          label={field}
           size="small"
-          className={classes.weightRepsField}
-          onChange={(e) => handleChange(e, lowercaseField, exercise, set, workoutId)}
+          control={control}
+          className={lowercaseField !== 'name' ? classes.weightRepsField : classes.exerciseNameField}
+          value={fieldVal}
+          // onChange={
+          //   (e) => lowercaseField !== 'name' ?
+          //     handleChange(e, lowercaseField, exercise, set, workoutId)
+          //     : handleNameChange(e, exercise, workoutId)}
           variant="outlined"
           InputLabelProps={{ shrink: true }}
-          value={fieldVal}
-          error={!!errors.name}
-          helperText={errors.name ? errors.name.message : ''}
         />
       </form>
     )
@@ -105,24 +117,40 @@ const Row: FunctionComponent<RowProps> = ({ set, exercise, workoutId }) => {
 
   const currentlyEditing = exercise.editSetIdx === set.setNumber;
 
+  const renderExerciseName = () => {
+    if (set.setNumber === 1) {
+      return isEditingName ? editingRowField('Name') : exercise.name
+    }
+  };
+
   return (
     <>
       <TableRow>
-        <TableCell component="th" scope="entry">
-          {set.setNumber === 1 ? exercise.name : null}
-          <AddNewExerciseIcon workoutId={workoutId} setNumber={set.setNumber} exercise={exercise} />
+        <TableCell align="center" component="th" scope="entry">
+          <span
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className={isHovered ? classes.hoveredExerciseName : ''}
+            onClick={() => setIsEditingName(true)}
+          >
+            {
+              renderExerciseName()
+            }
+          </span>
+          <ExerciseIcons workoutId={workoutId} setNumber={set.setNumber} exercise={exercise} />
         </TableCell>
         <TableCell align="right">{set.setNumber}</TableCell>
         <TableCell align="right">{currentlyEditing || set.newSet ? editingRowField('Weight') : set.weight}</TableCell>
         <TableCell align="right">{currentlyEditing || set.newSet ? editingRowField('Reps') : set.reps}</TableCell>
         <TableCell align="center">
           {currentlyEditing || set.newSet ?
-            <DoneIcon onClick={(): void => finishEditingSet(workoutId, exercise.id, set.setNumber)} />
+            // <DoneIcon onClick={(): void => finishEditingSet(workoutId, exercise.id, set.setNumber)} /> 
+            null
             : <EditIcon onClick={(): void => editSet(workoutId, exercise.id, set.setNumber)} />
           }
         </TableCell>
         <TableCell align="center">
-          <RemoveCircleOutlineOutlinedIcon onClick={(): void => deleteSet({ workoutId, set })} />
+          <RemoveCircleOutlineOutlinedIcon onClick={(): void => saveDeleteSet({ workoutId, exerciseName: exercise.name, set })} />
         </TableCell>
       </TableRow>
       {
