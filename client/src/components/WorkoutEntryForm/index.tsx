@@ -4,11 +4,11 @@ import TextField from '@material-ui/core/TextField';
 import TableCell from '@material-ui/core/TableCell';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import uniqueId from 'lodash/uniqueId';
+import { v4 as uuidv4 } from 'uuid';
 
 import useStyles from './styles';
 import Set from '../../interfaces/Set';
-import { useStoreState, useStoreActions } from '../../hooks';
+import { useStoreActions } from '../../hooks';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -34,9 +34,8 @@ type WorkoutEntryFormProps = {
 
 const WorkoutEntryForm: FunctionComponent<WorkoutEntryFormProps> = ({ id }) => {
   const classes = useStyles();
-  const entries = useStoreState((state) => state.workouts.entries);
 
-  const { addExercise, setIsAddingNewExercise } = useStoreActions(state => state.workouts);
+  const { saveAddExercise, setIsAddingNewExercise } = useStoreActions(state => state.workouts);
 
   const { register, handleSubmit, errors } = useForm<Set>({
     validationSchema: SetSchema,
@@ -45,20 +44,20 @@ const WorkoutEntryForm: FunctionComponent<WorkoutEntryFormProps> = ({ id }) => {
   const onSubmit = (data: Set): void => {
     const sets: Set[] = [];
     const exercise = {
-      id: uniqueId(),
+      id: uuidv4(),
       name: data.name,
       sets,
       isAddingNewSet: false,
       editSetIdx: -1,
     };
     exercise.sets.push(data);
-    addExercise({ workoutId: id, exercise });
+    saveAddExercise({ workoutId: id, exercise });
     setIsAddingNewExercise({ id, flag: false });
   };
 
   return (
     <TableRow>
-      <TableCell component="th" scope="entry">
+      <TableCell align="center" component="th" scope="entry">
         <form onSubmit={handleSubmit(onSubmit)} noValidate className={classes.formContainer}>
           <TextField
             inputRef={register}

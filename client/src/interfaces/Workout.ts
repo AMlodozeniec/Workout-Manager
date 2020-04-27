@@ -5,4 +5,5 @@ export default interface Workout {
   name: string,
   exercises: Exercise[],
   isAddingNewExercise: boolean,
+  showingExercises: boolean,
 };

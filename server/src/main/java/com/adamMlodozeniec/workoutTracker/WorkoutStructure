@@ -1,0 +1,69 @@
+{
+      "id": "1",
+      "name": "Workout 1",
+      "exercises": [
+        {
+          "id": "1",
+          "name": "Bench Press",
+          "sets": [
+            {
+              "name": "Bench Press",
+              "setNumber": 1,
+              "weight": 200,
+              "reps": 5,
+              "newSet": false
+            },
+            {
+              "name": "Bench Press",
+              "setNumber": 2,
+              "weight": 200,
+              "reps": 5,
+              "newSet": false
+            }
+          ],
+          "isAddingNewSet": false,
+          "editSetIdx": -1
+        },
+        {
+          "id": "1",
+          "name": "Squat",
+          "sets": [
+            {
+              "name": "Squat",
+              "setNumber": 1,
+              "weight": 250,
+              "reps": 5,
+              "newSet": false
+            },
+            {
+              "name": "Squat",
+              "setNumber": 2,
+              "weight": 250,
+              "reps": 5,
+              "newSet": false
+            },
+            {
+              "name": "Squat",
+              "setNumber": 3,
+              "weight": 250,
+              "reps": 5,
+              "newSet": false
+            }
+          ],
+          "isAddingNewSet": false,
+          "editSetIdx": -1
+        }
+      ],
+      "isAddingNewExercise": false,
+      "isShowingExercises": true
+}
+
+
+@PUT
+{
+	"id": "1",
+	"name": "Bench Press",
+	"sets": [],
+	"isAddingNewSet": false,
+	"editSetIdx": -1
+}

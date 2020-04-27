@@ -26,4 +26,13 @@ export default makeStyles({
       transform: 'translate(7px, -6px) scale(0.75)',
     },
   },
+  centerText: {
+    '& .MuiTableCell-sizeSmall': {
+      'text-align': 'center',
+    },
+  },
+  hoveredExerciseName: {
+    'textDecoration': 'underline',
+    'cursor': 'pointer',
+  },
 });
