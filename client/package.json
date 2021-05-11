@@ -17,7 +17,7 @@
     "@types/uuid": "^7.0.2",
     "@types/yup": "^0.26.32",
     "easy-peasy": "^3.3.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-hook-form": "^4.10.1",
